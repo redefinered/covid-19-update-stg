@@ -1,8 +1,9 @@
 import React from 'react';
-import Chart from 'components/chart/chart.component';
-import NewCases from 'components/new-cases/new-cases.component';
-import { Container, Col, Row } from 'react-bootstrap';
-// import * as d3 from 'd3';
+import Loader from 'components/loader.component';
+import CountrySelector from 'components/country-selector/country-selector.component';
+import Time from 'components/time/time.component';
+import { Container, Jumbotron } from 'react-bootstrap';
+import Fields from 'components/fields/fields.component';
 import axios from 'axios';
 import './homepage.styles.scss';
 
@@ -12,28 +13,27 @@ class Homepage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      newCases: [],
+      data: [],
       country: null,
       searchString: ''
     };
-    // this.canvas = React.createRef();
   }
 
-  componentDidMount() {
-    // console.log('xxxx', this.graphContainer.clientWidth);
+  async componentDidMount() {
     // get new cases today
-    axios.get('https://coronavirus-19-api.herokuapp.com/countries').then((response) => {
-      let newCases = response.data;
-      this.setState({ newCases });
+    const { data } = await axios.get('https://coronavirus-19-api.herokuapp.com/countries');
+    this.setState({ data }, async () => {
+      const { data } = await axios.get(
+        `https://geolocation-db.com/json/${REACT_APP_GEOLOCATION_DB_API_KEY}`
+      );
+      const { country_name } = data;
+      // let country_name = 'United States';
+      /**
+       * TODO: test dropdown for other countries
+       * HACK FIX USA FOR NOW
+       */
+      this.setState({ country: country_name === 'United States' ? 'USA' : country_name });
     });
-
-    // get user location
-    axios
-      .get(`https://geolocation-db.com/json/${REACT_APP_GEOLOCATION_DB_API_KEY}`)
-      .then((response) => {
-        console.log('location', response.data);
-        this.setState({ country: response.data.country_name || 'World' });
-      });
   }
 
   handleSelect = (event) => {
@@ -45,29 +45,27 @@ class Homepage extends React.Component {
   };
 
   render() {
-    const { newCases, country, searchString } = this.state;
+    const { data, country, searchString } = this.state;
+    if (data.length === 0 || !country) return <Loader />;
 
     return (
       <Container fluid>
-        <Row>
-          <Col lg="10" className="main">
-            <Row>
-              <Col lg="4">
-                <NewCases
-                  data={newCases}
-                  handleSelect={this.handleSelect}
-                  country={country}
-                  handleSearch={this.handleSearch}
-                  searchString={searchString}
-                />
-              </Col>
-              <Col lg="8">{country ? <Chart country={country} /> : null}</Col>
-            </Row>
-          </Col>
-          <Col lg="2" className="sidebar">
-            {/* sidebar here */}
-          </Col>
-        </Row>
+        <Jumbotron className="mt-3">
+          <h1>Covid-19 Updates</h1>
+          <Time />
+          <p className="lead">
+            This page updates everyday so you stay updated on the global situation regarding the
+            Coronovirus pandemic
+          </p>
+          <CountrySelector
+            data={data}
+            handleSelect={this.handleSelect}
+            selectedCountry={country}
+            handleSearch={this.handleSearch}
+            searchString={searchString}
+          />
+        </Jumbotron>
+        <Fields country={country} data={data} />
         <footer className="py-3">
           <p className="text-muted">&copy; reddeguzman | {`v${REACT_APP_VERSION}`}</p>
         </footer>
