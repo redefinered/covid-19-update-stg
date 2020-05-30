@@ -2,9 +2,11 @@ import React from 'react';
 import Loader from 'components/loader.component';
 import CountrySelector from 'components/country-selector/country-selector.component';
 import Time from 'components/time/time.component';
-import { Container, Jumbotron } from 'react-bootstrap';
+import { Container, Jumbotron, Alert } from 'react-bootstrap';
 import Fields from 'components/fields/fields.component';
 import axios from 'axios';
+import isEmpty from 'lodash/isEmpty';
+
 import './homepage.styles.scss';
 
 const { REACT_APP_VERSION, REACT_APP_GEOLOCATION_DB_API_KEY } = process.env;
@@ -13,6 +15,7 @@ class Homepage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: null,
       data: [],
       country: null,
       searchString: ''
@@ -22,7 +25,9 @@ class Homepage extends React.Component {
   async componentDidMount() {
     // get new cases today
     const { data } = await axios.get('https://coronavirus-19-api.herokuapp.com/countries');
+    if (isEmpty(data)) this.setState({ error: 'Info: under maintanance' });
     this.setState({ data }, async () => {
+      this.setState({ error: null });
       const { data } = await axios.get(
         `https://geolocation-db.com/json/${REACT_APP_GEOLOCATION_DB_API_KEY}`
       );
@@ -46,6 +51,10 @@ class Homepage extends React.Component {
 
   render() {
     const { data, country, searchString } = this.state;
+
+    if (this.state.error === 'Info: under maintanance')
+      return <Alert variant="warning">{this.state.error}</Alert>;
+
     if (data.length === 0 || !country) return <Loader />;
 
     return (
