@@ -2,7 +2,7 @@
   "name": "covid-19-update",
   "version": "1.0.2-beta.0",
   "private": true,
-  "homepage": "https://simplecovid19updates.com",
+  "homepage": "https://redefinered.github.io/covid-19-update-stg",
   "dependencies": {
     "@bugsnag/js": "^7.1.1",
     "@bugsnag/plugin-react": "^7.1.1",
