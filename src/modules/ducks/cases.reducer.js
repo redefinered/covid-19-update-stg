@@ -1,5 +1,7 @@
 import { createReducer } from 'reduxsauce';
 import { Types } from './cases.actions';
+import { countryNameOverrides } from 'utils';
+import find from 'lodash/find';
 
 const defaultState = {
   error: null,
@@ -13,10 +15,11 @@ const defaultState = {
 
 export default createReducer(defaultState, {
   [Types.SET_COUNTRY]: (state, action) => {
+    let { country } = action;
     return {
       ...state,
       isFetching: false,
-      country: action.country
+      country
     };
   },
   [Types.SET_COUNTRIES]: (state, action) => {
@@ -34,10 +37,12 @@ export default createReducer(defaultState, {
   },
   [Types.GET_INITIAL_DATA_SUCCESS]: (state, action) => {
     const { country, herokuAllStatus } = action.data;
+    let overrideExists = find(countryNameOverrides, c => c.from === country);
+    console.log('overrideExists', overrideExists);
     return {
       ...state,
       isFetching: false,
-      country,
+      country: overrideExists ? overrideExists.to : country,
       herokuAllStatus,
       error: null
     };

@@ -3,3 +3,7 @@ export const countrySlugOverrides = [
   { country: 'United States', slug: 'united-states' },
   { country: 'Hong Kong', slug: 'hong-kong-sar-china' }
 ];
+
+export const countryNameOverrides = [
+  { from: 'United States', to: 'USA' }
+]
