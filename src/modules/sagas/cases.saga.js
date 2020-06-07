@@ -9,6 +9,7 @@ function* getInitialDataRequest() {
     const herokuAllStatus = yield call(getHerokuAllStatus);
     if (isEmpty(herokuAllStatus)) throw new Error('Error: no data available');
     yield put(Creators.getInitialDataSuccess({ country, herokuAllStatus }));
+    // yield put(Creators.getInitialDataSuccess({ country: 'United States', herokuAllStatus }));
   } catch (error) {
     yield put(Creators.getInitialDataFailure(error.message));
   }
