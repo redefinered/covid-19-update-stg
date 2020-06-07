@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { countrySlugOverrides } from 'utils';
+import find from 'lodash/find';
 
 export const getGeolocation = async () => {
   try {
@@ -13,7 +15,14 @@ export const getGeolocation = async () => {
 
 export const getCasesByCountry = async (country) => {
   try {
-    let { data } = await axios.get(`https://api.covid19api.com/dayone/country/${country}`);
+    let selectedCountry;
+    let override = find(countrySlugOverrides, c => c.country === country);
+    if (override) {
+      selectedCountry = override.slug;
+    }
+    selectedCountry = country.toLowerCase().split(' ').join('-');
+
+    let { data } = await axios.get(`https://api.covid19api.com/dayone/country/${selectedCountry}`);
     return data;
   } catch (error) {
     throw new Error(error);

@@ -1,10 +1,6 @@
 import sortBy from 'lodash/sortBy';
 import find from 'lodash/find';
-
-export const countrySlugOverrides = [
-  { country: 'USA', slug: 'united-states' },
-  { country: 'Hong Kong', slug: 'hong-kong-sar-china' }
-];
+import { countrySlugOverrides } from 'utils';
 
 export const setUpCountriesData = (herokuData) => {
   let countries = [];
