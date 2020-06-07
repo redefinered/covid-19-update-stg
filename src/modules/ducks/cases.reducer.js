@@ -38,7 +38,6 @@ export default createReducer(defaultState, {
   [Types.GET_INITIAL_DATA_SUCCESS]: (state, action) => {
     const { country, herokuAllStatus } = action.data;
     let overrideExists = find(countryNameOverrides, (c) => c.from === country);
-    console.log('overrideExists', overrideExists);
     return {
       ...state,
       isFetching: false,
